@@ -12,6 +12,7 @@ from VRclub.api import GameOnSetViewSet
 from VRclub.api import HallViewSet
 from VRclub.api import OrderViewSet
 from VRclub.api import OrderItemViewSet
+from VRclub.api import ProfileViewSet
 
 router = DefaultRouter()
 router.register('genres', GenreViewSet, 'genres')
@@ -22,6 +23,7 @@ router.register('game-on-sets', GameOnSetViewSet, 'game-on-sets')
 router.register('halls', HallViewSet, 'halls')
 router.register('orders', OrderViewSet, 'orders')
 router.register('order-items', OrderItemViewSet, 'order-items')
+router.register('profile', ProfileViewSet, 'profile')
 
 
 urlpatterns = [
