@@ -1,9 +1,13 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
+from django.contrib.auth.models import User
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+
+from django.contrib.auth import authenticate
+
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,6 +31,7 @@ from VRclub.serializers import GameOnSetSerializer
 from VRclub.serializers import HallSerializer
 from VRclub.serializers import OrderSerializer
 from VRclub.serializers import OrderItemSerializer
+
 
 
 class GenreViewSet(
@@ -156,6 +161,19 @@ class ProfileViewSet(GenericViewSet):
         user = authenticate(request, username=username, password=password)
         if user is None:
             return Response({'detail': 'Неверный логин или пароль'}, status=status.HTTP_400_BAD_REQUEST)
+        django_login(request, user)
+        return Response({'user': _user_payload(user)})
+
+    @action(detail=False, methods=['post'], url_path='register')
+    @method_decorator(ensure_csrf_cookie)
+    def register(self, request):
+        username = (request.data.get('username') or '').strip()
+        password = request.data.get('password') or ''
+        if not username or not password:
+            return Response({'detail': 'Укажите логин и пароль'}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(username=username).exists():
+            return Response({'detail': 'Пользователь с таким логином уже есть'}, status=status.HTTP_400_BAD_REQUEST)
+        user = User.objects.create_user(username=username, password=password)
         django_login(request, user)
         return Response({'user': _user_payload(user)})
 

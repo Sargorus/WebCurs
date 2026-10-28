@@ -5,6 +5,7 @@ const useProfileStore = defineStore('profile', {
   state: () => ({
     user: null,
     loading: false,
+    isLoaded: false,
     error: '',
   }),
 
@@ -14,16 +15,20 @@ const useProfileStore = defineStore('profile', {
   },
 
   actions: {
-    async getMe() {
+    async getMe() 
+    {
       this.loading = true
       try {
         const { data } = await api.get('/profile/me/')
         this.user = data.user ?? null
         this.error = ''
-      } catch (e) {
+      } catch (e) 
+      {
         this.user = null
-      } finally {
+      } finally 
+      {
         this.loading = false
+        this.isLoaded = true
       }
     },
 
@@ -34,21 +39,47 @@ const useProfileStore = defineStore('profile', {
         const { data } = await api.post('/profile/login/', { username, password })
         this.user = data.user ?? null
         return true
-      } catch (e) {
+      } catch (e) 
+      {
         this.user = null
         this.error = e.response?.data?.detail ?? 'Не удалось войти'
         return false
-      } finally {
+      } finally 
+      {
         this.loading = false
       }
     },
 
-    async logout() {
+    async register(username, password) 
+    {
+      this.loading = true
+      this.error = ''
       try {
+        const { data } = await api.post('/profile/register/', { username, password })
+        this.user = data.user ?? null
+        return true
+      } catch (e) 
+      {
+        this.user = null
+        this.error = e.response?.data?.detail ?? 'Не удалось зарегистрироваться'
+        return false
+      } finally 
+      {
+        this.loading = false
+      }
+    },
+
+    async logout() 
+    {
+      try 
+      {
         await api.post('/profile/logout/')
-      } catch (e) {
-        // игнорируем ошибки выхода — состояние всё равно сбрасываем
-      } finally {
+      } 
+      
+      catch (e)
+      {} 
+      finally
+      {
         this.user = null
       }
     },
@@ -56,3 +87,4 @@ const useProfileStore = defineStore('profile', {
 })
 
 export default useProfileStore
+

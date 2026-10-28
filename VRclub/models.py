@@ -107,6 +107,9 @@ class Order(models.Model):
 
     total_amount = models.IntegerField("Общая стоимость заказа", default=0)
     status = models.TextField("Статус", choices=Status.choices, default=Status.pending)
+    user = models.ForeignKey(
+        "auth.User", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Пользователь"
+    )
 
     class Meta:
         verbose_name = "Заказ"
@@ -121,6 +124,7 @@ class OrderItem(models.Model):
     end_time = models.DateTimeField("Время конца")
     game_set_price = models.IntegerField("Цена в рублях за час")
     hall_price = models.IntegerField("Цена за 1 час брони на 1 человека")
+    players = models.IntegerField("Количество игроков", default=1)
 
     id_order = models.ForeignKey("Order", on_delete=models.CASCADE, null=True)
     id_hall = models.ForeignKey("Hall", on_delete=models.SET_NULL, null=True)

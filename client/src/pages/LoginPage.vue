@@ -22,6 +22,7 @@ async function onLoginClick() {
 
 <template>
   <div class="d-flex justify-content-center p-4">
+
     <form style="width: 350px" @submit.prevent.stop="onLoginClick">
       <h1 class="h4 mb-3">Вход</h1>
       <div v-if="error" class="alert alert-danger py-2">{{ error }}</div>
@@ -38,5 +39,9 @@ async function onLoginClick() {
       </button>
       <div v-if="isAuthenticated" class="text-success mt-2">Вы уже авторизованы</div>
     </form>
+    <div class="text-center mt-3">
+     Нет аккаунта?
+    <router-link to="/register">Зарегистрироваться</router-link>
+    </div>
   </div>
 </template>

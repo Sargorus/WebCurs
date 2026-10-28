@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import MainPage from '@/pages/MainPage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
+import RegisterPage from '@/pages/RegisterPage.vue'
 
 import GenresList from '@/components/GenresList.vue'
 import GamesList from '@/components/GamesList.vue'
@@ -12,12 +13,15 @@ import HallsList from '@/components/HallsList.vue'
 import OrdersList from '@/components/OrdersList.vue'
 import OrderItemsList from '@/components/OrderItemsList.vue'
 
+import useProfileStore from '@/stores/profileStore'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: 'active',
   routes: [
     { path: '/', name: 'main', component: MainPage },
     { path: '/login', name: 'login', component: LoginPage },
+    { path: '/register', name: 'register', component: RegisterPage },
 
     { path: '/genres', name: 'genres', component: GenresList },
     { path: '/games', name: 'games', component: GamesList },
@@ -30,4 +34,21 @@ const router = createRouter({
   ],
 })
 
+const publicPages = ['login', 'register']
+
+router.beforeEach(async (to) => {
+  const profileStore = useProfileStore()
+  if (!profileStore.isLoaded) {
+    await profileStore.getMe()
+  }
+  const isPublic = publicPages.includes(to.name)
+  if (!profileStore.isAuthenticated && !isPublic) {
+    return { name: 'login' }
+  }
+  if (profileStore.isAuthenticated && isPublic) {
+    return { name: 'main' }
+  }
+})
+
 export default router
+
